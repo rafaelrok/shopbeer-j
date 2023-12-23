@@ -1,0 +1,3 @@
+org.springframework.test.context.ContextCustomizerFactory = br.com.rafaelvieira.\
+    shopbeer.config.TestContainersSpringContextCustomizerFactory,br.com.\
+    rafaelvieira.shopbeer.config.SqlTestContainersSpringContextCustomizerFactory
