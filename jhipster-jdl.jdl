@@ -1,0 +1,201 @@
+entity Address {
+	street String,
+    number String,
+    complement String,
+    zipCode String
+}
+
+entity Beer {
+	code Long,
+    sku String,
+    name String,
+    description String,
+    value BigDecimal,
+    alcoholicContent BigDecimal,
+    commission BigDecimal,
+    quantityStock Integer,
+    origin Origin,
+    flavor Flavor,
+    photo String,
+    contentType String,
+    newPhoto Boolean,
+    urlPhoto String,
+    urlThumbnailPhoto String
+}
+
+entity City {
+	code Long,
+	name String
+}
+
+entity Costumer {
+	code Long,
+	name String,
+    typePerson TypePerson,
+    cpfcnpj String,
+	telephone String,
+    email String
+}
+
+entity GroupEmployee {
+	code Long,
+	name String
+}
+
+entity ItemSale {
+	code Long,
+	quantity Integer,
+	unitaryValue BigDecimal
+}
+
+entity Permission {
+	code Long,
+	name String
+}
+
+entity Sale {
+	code Long,
+	createDate ZonedDateTime,
+	valueShipping BigDecimal,
+    valueDiscount BigDecimal,
+	amount BigDecimal,
+	observation String,
+    dateTimeDelivery ZonedDateTime,
+    status StatusSale,
+    uuid String,
+	deliveryDate ZonedDateTime,
+	deliverySchedule ZonedDateTime
+}
+
+entity State {
+	code Long,
+	name String,
+	acronym String
+}
+
+entity Style {
+	code Long,
+	name String
+}
+
+entity UserEmployee {
+	code Long,
+	name String
+    email String,
+	password String
+    confirmPassword String,
+	active Boolean,
+    birthDate LocalDate
+}
+
+entity UserGroupId {
+}
+
+entity UserGroup {
+}
+
+enum Language {
+    ENGLISH, SPANISH
+}
+
+enum Flavor {
+    SWEET (Sweet),
+    BITTER (Bitter),
+    STRONG (Strong),
+    FRUITTY (Fruity),
+    SMOOTH (Smooth)
+}
+
+enum Origin {
+    NATIONAL, INTERNATIONAL
+}
+
+enum StatusSale {
+    BUDGET (Budget),
+    ISSUED (Issued),
+    CANCELED (Canceled)
+}
+
+enum StatusUserEmployee {
+    ACTIVATE, DISABLE
+}
+
+enum TypePerson {
+    PHYSICAL_PERSON, LEGAL_PERSON
+}
+
+relationship ManyToMany {
+    GroupEmployee{permissions(groupPermission)} to Permission{groupEmployee}
+    UserEmployee{groupEmployees(userEmployeeGroup)} to GroupEmployee{userEmployee}
+}
+
+// defining multiple OneToMany relationships with comments
+relationship OneToMany {
+	Sale{itens} to ItemSale
+    Style{beer} to Beer
+}
+
+relationship ManyToOne {
+	City{state(codeState)} to State
+    Address{city(codeCity)} to City
+    ItemSale{beer(codeBeer)} to Beer
+    ItemSale{sale(codeSale)} to Sale
+    Sale{costumer(codeCostumer)} to Costumer
+    Sale{userEmployee(codeUserEmployee)} to UserEmployee
+    Beer{style(codeStyle)} to Style
+    UserGroupId{userEmployee(codeUserEmployee)} to UserEmployee
+    UserGroupId{groupEmplyee(codeGroupEmployee)} to GroupEmployee
+}
+
+// defining multiple oneToOne relationships
+relationship OneToOne {
+    Beer{codeStyle} to Style
+}
+
+// Set pagination options
+paginate Beer, City, Costumer, Sale, Style, UserEmployee with infinite-scroll
+
+// Use Data Transfer Objects (DTO)
+dto * with mapstruct
+entity BeerDTO {
+    code Long,
+    sku String,
+    name String,
+    origin Origin,
+    value BigDecimal,
+    photo String,
+    urlThumbnailPhoto String
+}
+
+entity OriginSalesDTO {
+    month ZonedDateTime,
+    totalNational Integer,
+    totalInternational Integer
+}
+
+entity PhotoDTO {
+    name String,
+    contentType String,
+    url String
+}
+
+entity ReportingPeriodDTO {
+    startDate ZonedDateTime,
+    endDate ZonedDateTime
+}
+
+entity SalesMonthDTO {
+    month String,
+    total Integer
+}
+
+entity StockItemValueDTO {
+    value BigDecimal,
+    totalItens Integer
+}
+
+// Set service options to all except few
+service all with serviceImpl except Address, GroupEmployee, Permission, UserGroupId, UserGroup, ItemSale, State
+
+// Set an angular suffix
+// angularSuffix * with mySuffix
